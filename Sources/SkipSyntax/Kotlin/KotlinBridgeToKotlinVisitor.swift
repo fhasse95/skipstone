@@ -1472,8 +1472,9 @@ final class KotlinBridgeToKotlinVisitor {
         for (name, attributes, modifiers) in stateVariables {
             let mainActorString = isMainActorIsolated(in: classDeclaration, attributes: attributes, modifiers: modifiers) ? "@MainActor " : ""
             if attributes.stateAttribute != nil || attributes.contains(.focusState) || attributes.contains(.gestureState) || attributes.contains(.appStorage) {
-                swift.append(1, "var Java_initState_\(name): (\(mainActorString)() -> SkipUI.StateSupport)!")
-                swift.append(1, "var Java_syncState_\(name): (\(mainActorString)(SkipUI.StateSupport) -> Void)!")
+                let supportTypeName = attributes.contains(.appStorage) ? "AppStorageSupport" : "StateSupport"
+                swift.append(1, "var Java_initState_\(name): (\(mainActorString)() -> SkipUI.\(supportTypeName))!")
+                swift.append(1, "var Java_syncState_\(name): (\(mainActorString)(SkipUI.\(supportTypeName)) -> Void)!")
             } else if attributes.environmentAttribute != nil {
                 swift.append(1, "var Java_initEnvironment_\(name): (\(mainActorString)() -> String)!")
                 swift.append(1, "var Java_syncEnvironment_\(name): (\(mainActorString)(SkipUI.EnvironmentSupport?) -> Void)!")
